@@ -33,7 +33,7 @@
       display: block;
       margin-top: 10px;
     }
-    select, input[type="file"] {
+    select, input[type="file"], input[type="text"] {
       width: 100%;
       padding: 5px;
     }
@@ -77,6 +77,9 @@
       <option value="hr">HR</option>
       <option value="marketing">Marketing</option>
     </select>
+
+    <label for="prioritySkill">Critical Skill(s):</label>
+    <input type="text" id="prioritySkill" placeholder="e.g. stakeholder management, growth hacking" />
   </div>
 
   <div class="section">
@@ -136,21 +139,14 @@
   <script>
     const backendURL = "https://resume-fit-backend.onrender.com/parse";
 
-    // Populate Experience and Age dropdowns
     window.onload = () => {
       const exp = document.getElementById("jdExperience");
       const age = document.getElementById("jdAge");
       for (let i = 0; i <= 20; i++) {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = i;
-        exp.appendChild(opt);
+        exp.innerHTML += `<option value="${i}">${i}</option>`;
       }
       for (let i = 20; i <= 40; i++) {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = i;
-        age.appendChild(opt);
+        age.innerHTML += `<option value="${i}">${i}</option>`;
       }
     };
 
@@ -174,7 +170,8 @@
         joining: document.getElementById("jdJoining").value,
         age: document.getElementById("jdAge").value,
         gender: document.getElementById("jdGender").value,
-        graduate: document.getElementById("jdGraduate").value
+        graduate: document.getElementById("jdGraduate").value,
+        prioritySkill: document.getElementById("prioritySkill").value
       };
       for (const key in extras) {
         if (extras[key]) formData.append(key, extras[key]);
@@ -187,10 +184,16 @@
       .then(res => res.json())
       .then(data => {
         if (data.results) {
-          const out = data.results.map(r => `<tr><td>${r.cv}</td><td>${r.score}%</td><td>${r.label}</td></tr>`).join("");
+          const out = data.results.map(r =>
+            `<tr>
+              <td>${r.cv}</td>
+              <td>${r.score}%</td>
+              <td>${r.label}</td>
+              <td>${r.matches?.prioritySkill?.join(", ") || "—"}</td>
+            </tr>`).join("");
           document.getElementById("resultsOutput").innerHTML = `
             <table>
-              <tr><th>CV</th><th>Score</th><th>Fit</th></tr>
+              <tr><th>CV</th><th>Score</th><th>Fit</th><th>Matched Priority Skill(s)</th></tr>
               ${out}
             </table>
           `;
