@@ -134,30 +134,33 @@
   </div>
 
   <script>
-    // Populate experience and age options
-    for (let y = 0; y <= 20; y++) {
-      const opt = document.createElement("option");
-      opt.value = y;
-      opt.textContent = y;
-      document.getElementById("jdExperience").appendChild(opt);
-    }
-
-    for (let a = 20; a <= 40; a++) {
-      const opt = document.createElement("option");
-      opt.value = a;
-      opt.textContent = a;
-      document.getElementById("jdAge").appendChild(opt);
-    }
-
     const backendURL = "https://resume-fit-backend.onrender.com/parse";
+
+    // Populate Experience and Age dropdowns
+    window.onload = () => {
+      const exp = document.getElementById("jdExperience");
+      const age = document.getElementById("jdAge");
+      for (let i = 0; i <= 20; i++) {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = i;
+        exp.appendChild(opt);
+      }
+      for (let i = 20; i <= 40; i++) {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = i;
+        age.appendChild(opt);
+      }
+    };
 
     function submitForm() {
       const profile = document.getElementById("profile").value;
       const jdFile = document.getElementById("jdFile").files[0];
       const cvFiles = document.getElementById("cvFiles").files;
 
-      if (!profile) return alert("Please select a profile type.");
-      if (!jdFile || cvFiles.length === 0) return alert("Please upload a JD and at least one CV.");
+      if (!profile) return alert("Please select a profile.");
+      if (!jdFile || cvFiles.length === 0) return alert("Upload a JD and at least one CV.");
 
       const formData = new FormData();
       formData.append("profile", profile);
@@ -173,7 +176,6 @@
         gender: document.getElementById("jdGender").value,
         graduate: document.getElementById("jdGraduate").value
       };
-
       for (const key in extras) {
         if (extras[key]) formData.append(key, extras[key]);
       }
@@ -182,8 +184,9 @@
         method: "POST",
         body: formData
       })
-        .then(res => res.json())
-        .then(data => {
+      .then(res => res.json())
+      .then(data => {
+        if (data.results) {
           const out = data.results.map(r => `<tr><td>${r.cv}</td><td>${r.score}%</td><td>${r.label}</td></tr>`).join("");
           document.getElementById("resultsOutput").innerHTML = `
             <table>
@@ -191,11 +194,14 @@
               ${out}
             </table>
           `;
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Something went wrong. Please try again.");
-        });
+        } else {
+          alert("Error: " + (data.error || "Unknown issue"));
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Something went wrong.");
+      });
     }
   </script>
 </body>
