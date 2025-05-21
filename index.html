@@ -7,10 +7,13 @@
   <style>
     body {
       font-family: Arial, sans-serif;
+      background-image: url('assets/pink-bg.png');
+      background-size: cover;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
       padding: 20px;
       max-width: 1000px;
       margin: auto;
-      background: #f8f8f8;
     }
     h1, h2 {
       text-align: center;
@@ -22,7 +25,7 @@
       height: 60px;
     }
     .section {
-      background: #fff;
+      background: rgba(255,255,255,0.95);
       padding: 15px;
       margin-bottom: 20px;
       border-radius: 8px;
@@ -65,31 +68,40 @@
   </style>
 </head>
 <body>
-  <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/InsuranceDekho_logo.png" alt="InsuranceDekho Logo" class="logo" />
+  <img src="assets/logo.png" alt="InsuranceDekho Logo" class="logo" />
   <h1>Resume Fit Evaluator</h1>
 
   <div class="section">
-    <label for="profile">Select Profile Type:</label>
-    <select id="profile">
-      <option value="">-- Choose a Profile --</option>
-      <option value="analyst">Analyst</option>
-      <option value="sde">Software Developer (SDE)</option>
-      <option value="hr">HR</option>
-      <option value="marketing">Marketing</option>
-    </select>
-
-    <label for="prioritySkill">Critical Skill(s):</label>
-    <input type="text" id="prioritySkill" placeholder="e.g. stakeholder management, growth hacking" />
-  </div>
-
-  <div class="section">
     <h2>Upload JD</h2>
-    <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
-
-    <label>Experience (years):</label>
-    <select id="jdExperience">
-      <option value="">-- Optional --</option>
+    <label>Department:</label>
+    <select id="jdDept">
+      <option value="">-- Select Department --</option>
+      <option value="tech">Tech</option>
+      <option value="marketing">Marketing</option>
+      <option value="hr">HR</option>
+      <option value="b2b">B2B</option>
+      <option value="b2c">B2C</option>
+      <option value="operations">Operations</option>
     </select>
+
+    <label>Level:</label>
+    <select id="jdLevel">
+      <option value="">-- Select Level --</option>
+      <option value="L1">L1</option>
+      <option value="L2">L2</option>
+      <option value="L3">L3</option>
+      <option value="L4">L4</option>
+      <option value="L5">L5</option>
+      <option value="L6">L6</option>
+    </select>
+
+    <label>Critical Skill(s) (Optional):</label>
+    <input type="text" id="prioritySkill" placeholder="e.g. stakeholder management, tableau" />
+
+    <label>JD File:</label>
+    <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
+    <label>Experience (years):</label>
+    <select id="jdExperience"><option value="">-- Optional --</option></select>
 
     <label>Joining Availability:</label>
     <select id="jdJoining">
@@ -103,9 +115,7 @@
     </select>
 
     <label>Age:</label>
-    <select id="jdAge">
-      <option value="">-- Optional --</option>
-    </select>
+    <select id="jdAge"><option value="">-- Optional --</option></select>
 
     <label>Gender:</label>
     <select id="jdGender">
@@ -142,30 +152,24 @@
     window.onload = () => {
       const exp = document.getElementById("jdExperience");
       const age = document.getElementById("jdAge");
-      for (let i = 0; i <= 20; i++) {
-        exp.innerHTML += `<option value="${i}">${i}</option>`;
-      }
-      for (let i = 20; i <= 40; i++) {
-        age.innerHTML += `<option value="${i}">${i}</option>`;
-      }
+      for (let i = 0; i <= 20; i++) exp.innerHTML += `<option value="${i}">${i}</option>`;
+      for (let i = 20; i <= 45; i++) age.innerHTML += `<option value="${i}">${i}</option>`;
     };
 
     function submitForm() {
-      const profile = document.getElementById("profile").value;
       const jdFile = document.getElementById("jdFile").files[0];
       const cvFiles = document.getElementById("cvFiles").files;
-
-      if (!profile) return alert("Please select a profile.");
-      if (!jdFile || cvFiles.length === 0) return alert("Upload a JD and at least one CV.");
+      if (!jdFile || cvFiles.length === 0) return alert("Please upload a JD and at least one CV.");
 
       const formData = new FormData();
-      formData.append("profile", profile);
       formData.append("jd", jdFile);
       for (let i = 0; i < Math.min(5, cvFiles.length); i++) {
         formData.append("cvs", cvFiles[i]);
       }
 
       const extras = {
+        dept: document.getElementById("jdDept").value,
+        level: document.getElementById("jdLevel").value,
         experience: document.getElementById("jdExperience").value,
         joining: document.getElementById("jdJoining").value,
         age: document.getElementById("jdAge").value,
@@ -177,34 +181,21 @@
         if (extras[key]) formData.append(key, extras[key]);
       }
 
-      fetch(backendURL, {
-        method: "POST",
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.results) {
-          const out = data.results.map(r =>
-            `<tr>
-              <td>${r.cv}</td>
-              <td>${r.score}%</td>
-              <td>${r.label}</td>
-              <td>${r.matches?.prioritySkill?.join(", ") || "—"}</td>
-            </tr>`).join("");
+      fetch(backendURL, { method: "POST", body: formData })
+        .then(res => res.json())
+        .then(data => {
+          const out = data.results.map(r => `<tr><td>${r.cv}</td><td>${r.score}%</td><td>${r.label}</td><td>${r.matched_priority || "—"}</td></tr>`).join("");
           document.getElementById("resultsOutput").innerHTML = `
             <table>
-              <tr><th>CV</th><th>Score</th><th>Fit</th><th>Matched Priority Skill(s)</th></tr>
+              <tr><th>CV</th><th>Score</th><th>Fit</th><th>Matched Priority</th></tr>
               ${out}
             </table>
           `;
-        } else {
-          alert("Error: " + (data.error || "Unknown issue"));
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Something went wrong.");
-      });
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Something went wrong.");
+        });
     }
   </script>
 </body>
