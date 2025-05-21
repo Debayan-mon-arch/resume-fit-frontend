@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Resume Fit Evaluator | InsuranceDekho</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+      background: #f8f8f8;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #B41C18;
+    }
+    .logo {
+      display: block;
+      margin: 10px auto;
+      height: 60px;
+    }
+    .section {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 10px;
+    }
+    select, input[type="file"] {
+      width: 100%;
+      padding: 5px;
+    }
+    button {
+      background: #B41C18;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .results {
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/InsuranceDekho_logo.png" alt="InsuranceDekho Logo" class="logo" />
+  <h1>Resume Fit Evaluator</h1>
+
+  <div class="section">
+    <h2>Upload JD</h2>
+    <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
+    <label>Experience (years):</label>
+    <select id="jdExperience">
+      <option value="">-- Optional --</option>
+      ${[...Array(21).keys()].map(y => `<option value="${y}">${y}</option>`).join('')}
+    </select>
+    <label>Joining Availability:</label>
+    <select id="jdJoining">
+      <option value="">-- Optional --</option>
+      <option value="immediate">Immediate</option>
+      <option value="10 days">10 Days</option>
+      <option value="30 days">30 Days</option>
+      <option value="1 month">1 Month</option>
+      <option value="2 month">2 Months</option>
+      <option value="3 month">3 Months</option>
+    </select>
+    <label>Age:</label>
+    <select id="jdAge">
+      <option value="">-- Optional --</option>
+      ${Array.from({length: 21}, (_, i) => i + 20).map(a => `<option value="${a}">${a}</option>`).join('')}
+    </select>
+    <label>Gender:</label>
+    <select id="jdGender">
+      <option value="">-- Optional --</option>
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+    <label>Graduate Level:</label>
+    <select id="jdGraduate">
+      <option value="">-- Optional --</option>
+      <option value="10th">10th</option>
+      <option value="12th">12th</option>
+      <option value="ug">UG</option>
+      <option value="pg">PG</option>
+    </select>
+  </div>
+
+  <div class="section">
+    <h2>Upload up to 5 CVs</h2>
+    <input type="file" id="cvFiles" multiple accept=".pdf,.doc,.docx" />
+  </div>
+
+  <button onclick="submitForm()">Evaluate Fit</button>
+
+  <div class="section results" id="results">
+    <h2>Results</h2>
+    <div id="resultsOutput"></div>
+  </div>
+
+  <script>
+    const backendURL = "https://your-backend-url.onrender.com/parse"; // Replace with your Render backend
+
+    function submitForm() {
+      const jdFile = document.getElementById("jdFile").files[0];
+      const cvFiles = document.getElementById("cvFiles").files;
+      if (!jdFile || cvFiles.length === 0) return alert("Please upload a JD and at least one CV.");
+
+      const formData = new FormData();
+      formData.append("jd", jdFile);
+      for (let i = 0; i < Math.min(5, cvFiles.length); i++) {
+        formData.append("cvs", cvFiles[i]);
+      }
+
+      fetch(backendURL, {
+        method: "POST",
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          const out = data.results.map(r => `<tr><td>${r.cv}</td><td>${r.score}%</td><td>${r.label}</td></tr>`).join("");
+          document.getElementById("resultsOutput").innerHTML = `
+            <table>
+              <tr><th>CV</th><th>Score</th><th>Fit</th></tr>
+              ${out}
+            </table>
+          `;
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Something went wrong. Please try again.");
+        });
+    }
+  </script>
+</body>
+</html>
