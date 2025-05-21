@@ -69,13 +69,23 @@
   <h1>Resume Fit Evaluator</h1>
 
   <div class="section">
+    <label for="profile">Select Profile Type:</label>
+    <select id="profile">
+      <option value="">-- Choose a Profile --</option>
+      <option value="analyst">Analyst</option>
+      <option value="sde">Software Developer (SDE)</option>
+      <option value="hr">HR</option>
+      <option value="marketing">Marketing</option>
+    </select>
+  </div>
+
+  <div class="section">
     <h2>Upload JD</h2>
     <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
 
     <label>Experience (years):</label>
     <select id="jdExperience">
       <option value="">-- Optional --</option>
-      <!-- JS will populate -->
     </select>
 
     <label>Joining Availability:</label>
@@ -92,7 +102,6 @@
     <label>Age:</label>
     <select id="jdAge">
       <option value="">-- Optional --</option>
-      <!-- JS will populate -->
     </select>
 
     <label>Gender:</label>
@@ -125,38 +134,38 @@
   </div>
 
   <script>
-    // Dynamically populate Experience and Age
-    const expSelect = document.getElementById('jdExperience');
-    const ageSelect = document.getElementById('jdAge');
-
+    // Populate experience and age options
     for (let y = 0; y <= 20; y++) {
       const opt = document.createElement("option");
       opt.value = y;
       opt.textContent = y;
-      expSelect.appendChild(opt);
+      document.getElementById("jdExperience").appendChild(opt);
     }
 
     for (let a = 20; a <= 40; a++) {
       const opt = document.createElement("option");
       opt.value = a;
       opt.textContent = a;
-      ageSelect.appendChild(opt);
+      document.getElementById("jdAge").appendChild(opt);
     }
 
     const backendURL = "https://resume-fit-backend.onrender.com/parse";
 
     function submitForm() {
+      const profile = document.getElementById("profile").value;
       const jdFile = document.getElementById("jdFile").files[0];
       const cvFiles = document.getElementById("cvFiles").files;
+
+      if (!profile) return alert("Please select a profile type.");
       if (!jdFile || cvFiles.length === 0) return alert("Please upload a JD and at least one CV.");
 
       const formData = new FormData();
+      formData.append("profile", profile);
       formData.append("jd", jdFile);
       for (let i = 0; i < Math.min(5, cvFiles.length); i++) {
         formData.append("cvs", cvFiles[i]);
       }
 
-      // Optional Fields
       const extras = {
         experience: document.getElementById("jdExperience").value,
         joining: document.getElementById("jdJoining").value,
