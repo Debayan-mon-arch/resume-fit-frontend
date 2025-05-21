@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Resume Fit Evaluator | InsuranceDekho</title>
   <style>
     body {
@@ -71,11 +71,13 @@
   <div class="section">
     <h2>Upload JD</h2>
     <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
+
     <label>Experience (years):</label>
     <select id="jdExperience">
       <option value="">-- Optional --</option>
-      ${[...Array(21).keys()].map(y => `<option value="${y}">${y}</option>`).join('')}
+      <!-- JS will populate -->
     </select>
+
     <label>Joining Availability:</label>
     <select id="jdJoining">
       <option value="">-- Optional --</option>
@@ -86,17 +88,20 @@
       <option value="2 month">2 Months</option>
       <option value="3 month">3 Months</option>
     </select>
+
     <label>Age:</label>
     <select id="jdAge">
       <option value="">-- Optional --</option>
-      ${Array.from({length: 21}, (_, i) => i + 20).map(a => `<option value="${a}">${a}</option>`).join('')}
+      <!-- JS will populate -->
     </select>
+
     <label>Gender:</label>
     <select id="jdGender">
       <option value="">-- Optional --</option>
       <option value="male">Male</option>
       <option value="female">Female</option>
     </select>
+
     <label>Graduate Level:</label>
     <select id="jdGraduate">
       <option value="">-- Optional --</option>
@@ -120,7 +125,25 @@
   </div>
 
   <script>
-    const backendURL = "https://resume-fit-backend.onrender.com/parse"; // Replace with your Render backend
+    // Dynamically populate Experience and Age
+    const expSelect = document.getElementById('jdExperience');
+    const ageSelect = document.getElementById('jdAge');
+
+    for (let y = 0; y <= 20; y++) {
+      const opt = document.createElement("option");
+      opt.value = y;
+      opt.textContent = y;
+      expSelect.appendChild(opt);
+    }
+
+    for (let a = 20; a <= 40; a++) {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.textContent = a;
+      ageSelect.appendChild(opt);
+    }
+
+    const backendURL = "https://resume-fit-backend.onrender.com/parse";
 
     function submitForm() {
       const jdFile = document.getElementById("jdFile").files[0];
@@ -131,6 +154,19 @@
       formData.append("jd", jdFile);
       for (let i = 0; i < Math.min(5, cvFiles.length); i++) {
         formData.append("cvs", cvFiles[i]);
+      }
+
+      // Optional Fields
+      const extras = {
+        experience: document.getElementById("jdExperience").value,
+        joining: document.getElementById("jdJoining").value,
+        age: document.getElementById("jdAge").value,
+        gender: document.getElementById("jdGender").value,
+        graduate: document.getElementById("jdGraduate").value
+      };
+
+      for (const key in extras) {
+        if (extras[key]) formData.append(key, extras[key]);
       }
 
       fetch(backendURL, {
