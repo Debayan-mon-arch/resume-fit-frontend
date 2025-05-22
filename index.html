@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Resume Fit Evaluator | InsuranceDekho</title>
+  <title>Smart Hire Assist</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -11,131 +11,121 @@
       max-width: 1100px;
       margin: auto;
       background: #14122c;
-      color: #fff;
+      color: white;
     }
     h1, h2 {
       text-align: center;
-      color: #ff5c5c;
+      color: #ff4b4b;
     }
     .logo {
       display: block;
       margin: 10px auto;
-      height: 60px;
+      height: 80px;
     }
     .section {
-      background: #222040;
+      background: #1e1a35;
       padding: 15px;
       margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(255,255,255,0.1);
+      border-radius: 10px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
     }
     label {
       font-weight: bold;
       display: block;
       margin-top: 10px;
-      color: #ffdddd;
+      color: #ffcccb;
     }
     select, input[type="file"], input[type="text"] {
       width: 100%;
       padding: 8px;
-      margin-top: 4px;
+      border-radius: 4px;
+      border: none;
+      margin-top: 5px;
     }
     button {
-      background: #ff5c5c;
+      background: #ff4b4b;
       color: white;
       padding: 10px 20px;
       border: none;
       cursor: pointer;
       font-size: 16px;
       margin-top: 10px;
+      border-radius: 5px;
+    }
+    .results {
+      margin-top: 20px;
+      overflow-x: auto;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
+      background: white;
+      color: black;
     }
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
-      color: #fff;
+      text-align: left;
     }
     th {
-      background: #333;
+      background: #f2f2f2;
+    }
+    #cvPreview {
+      margin-top: 10px;
+      font-style: italic;
+      font-size: 0.9em;
+      color: #ddd;
     }
   </style>
 </head>
 <body>
-  <img src="https://i.ibb.co/m5fc0M2K/Whats-App-Image-2025-05-21-at-18-59-58.jpg" alt="InsuranceDekho Logo" class="logo" />
-  <h1>Resume Fit Evaluator</h1>
+  <!-- Embedded base64 logo -->
+  <img class="logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..." alt="InsuranceDekho Logo" />
+  <h1>Smart Hire Assist</h1>
 
   <div class="section">
     <h2>Section 1: Department & Level</h2>
     <label for="dept">Select Department:</label>
-    <select id="dept">
+    <select id="dept" required>
       <option value="">-- Select Department --</option>
-      <option>Admin</option>
-      <option>B2B</option>
-      <option>B2C</option>
-      <option>Claims, Inbound & Onboarding</option>
-      <option>Compliance</option>
-      <option>Corporate Business</option>
-      <option>Cross Sell</option>
-      <option>Customer Excellence</option>
-      <option>Finance</option>
-      <option>Founder's Office</option>
-      <option>Human Resources</option>
-      <option>Insurer Relation</option>
-      <option>IT</option>
-      <option>Learning & Development</option>
-      <option>Legal</option>
-      <option>Marketing</option>
-      <option>OEM & Dealership</option>
-      <option>Operations</option>
-      <option>Partnership</option>
-      <option>Procurement</option>
-      <option>Product</option>
-      <option>Reinsurance</option>
-      <option>Renewal</option>
-      <option>Revenue</option>
-      <option>Strategy & Analytics</option>
-      <option>Supply</option>
-      <option>Technology</option>
+      <option>Admin</option><option>B2B</option><option>B2C</option>
+      <option>Claims, Inbound & Onboarding</option><option>Compliance</option><option>Corporate Business</option>
+      <option>Cross Sell</option><option>Customer Excellence</option><option>Finance</option>
+      <option>Founder's Office</option><option>Human Resources</option><option>Insurer Relation</option>
+      <option>IT</option><option>Learning & Development</option><option>Legal</option><option>Marketing</option>
+      <option>OEM & Dealership</option><option>Operations</option><option>Partnership</option>
+      <option>Procurement</option><option>Product</option><option>Reinsurance</option>
+      <option>Renewal</option><option>Revenue</option><option>Strategy & Analytics</option>
+      <option>Supply</option><option>Technology</option>
     </select>
 
     <label for="level">Select Level:</label>
-    <select id="level">
+    <select id="level" required>
       <option value="">-- Select Level --</option>
-      <option>Executive</option>
-      <option>Senior Executive</option>
-      <option>AM</option>
-      <option>DM</option>
-      <option>Manager</option>
-      <option>SM</option>
-      <option>AD</option>
-      <option>Senior AD</option>
-      <option>Director</option>
-      <option>AVP</option>
-      <option>VP</option>
-      <option>SVP</option>
+      <option>Executive</option><option>Senior Executive</option><option>AM</option><option>DM</option>
+      <option>Manager</option><option>SM</option><option>AD</option><option>Senior AD</option>
+      <option>Director</option><option>AVP</option><option>VP</option><option>SVP</option>
     </select>
   </div>
 
   <div class="section">
-    <h2>Section 2: Upload Critical Skills</h2>
-    <label for="priority">Enter up to 3 Priority Skills (comma separated):</label>
-    <input type="text" id="prioritySkills" placeholder="e.g., python, leadership, sql" />
+    <h2>Section 2: Upload Your Critical Skills</h2>
+    <label for="prioritySkills">Enter Critical Skill(s):</label>
+    <input type="text" id="prioritySkills" placeholder="e.g. negotiation, python, salesforce" />
   </div>
+
   <div class="section">
-    <h2>Section 3: Upload up to 5 CVs</h2>
+    <h2>Section 3: Upload JD & CVs</h2>
     <label for="jdFile">Upload JD:</label>
     <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
 
-    <label for="cvFiles">Upload CVs:</label>
-    <input type="file" id="cvFiles" multiple accept=".pdf,.doc,.docx" />
+    <label for="cvFiles">Upload up to 5 CVs:</label>
+    <input type="file" id="cvFiles" multiple accept=".pdf,.doc,.docx" onchange="showCvNames()" />
+    <div id="cvPreview"></div>
+
+    <button onclick="submitForm()">Evaluate Fit</button>
   </div>
-
-  <button onclick="submitForm()">Evaluate Fit</button>
-
   <div class="section results" id="results">
     <h2>Results</h2>
     <div id="resultsOutput"></div>
@@ -144,23 +134,29 @@
   <script>
     const backendURL = "https://resume-fit-backend.onrender.com/parse";
 
+    function showCvNames() {
+      const files = document.getElementById("cvFiles").files;
+      const names = Array.from(files).map(f => f.name).join(", ");
+      document.getElementById("cvPreview").textContent = "Selected CVs: " + names;
+    }
+
     function submitForm() {
-      const jdFile = document.getElementById("jdFile").files[0];
-      const cvFiles = document.getElementById("cvFiles").files;
       const dept = document.getElementById("dept").value;
       const level = document.getElementById("level").value;
       const prioritySkills = document.getElementById("prioritySkills").value;
+      const jdFile = document.getElementById("jdFile").files[0];
+      const cvFiles = document.getElementById("cvFiles").files;
 
-      if (!jdFile || cvFiles.length === 0 || !dept || !level) {
-        alert("Please upload JD, at least one CV, and select department and level.");
+      if (!dept || !level || !jdFile || cvFiles.length === 0) {
+        alert("Please fill all required fields and upload files.");
         return;
       }
 
       const formData = new FormData();
-      formData.append("jd", jdFile);
-      formData.append("department", dept);
+      formData.append("dept", dept);
       formData.append("level", level);
-      formData.append("prioritySkills", prioritySkills);
+      formData.append("priority_skills", prioritySkills);
+      formData.append("jd", jdFile);
 
       for (let i = 0; i < Math.min(5, cvFiles.length); i++) {
         formData.append("cvs", cvFiles[i]);
@@ -172,24 +168,29 @@
       })
         .then(res => res.json())
         .then(data => {
-          if (!data.results) {
-            alert("Error: Unexpected response from server.");
-            return;
-          }
-
-          const out = data.results.map(r =>
-            `<tr>
+          const out = data.results.map(r => `
+            <tr>
               <td>${r.cv}</td>
+              <td>${r.section1_score}%</td>
+              <td>${r.section2_score}%</td>
+              <td>${r.section3_score}%</td>
               <td>${r.score}%</td>
               <td>${r.label}</td>
-              <td>${r.section_scores.join(" / ")}</td>
-              <td>${r.priority_matched || "—"}</td>
-            </tr>`
-          ).join("");
+              <td>${r.priority || "—"}</td>
+            </tr>
+          `).join("");
 
           document.getElementById("resultsOutput").innerHTML = `
             <table>
-              <tr><th>CV</th><th>Score</th><th>Fit</th><th>Section Scores</th><th>Matched Priority Skill(s)</th></tr>
+              <tr>
+                <th>CV Name</th>
+                <th>Section 1 Score</th>
+                <th>Section 2 Score</th>
+                <th>Section 3 Score</th>
+                <th>Overall Score</th>
+                <th>Shortlist Recommendation</th>
+                <th>Matched Priority Skill(s)</th>
+              </tr>
               ${out}
             </table>
           `;
