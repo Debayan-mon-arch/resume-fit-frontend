@@ -78,30 +78,17 @@
       color: #ddd;
     }
     #loader {
+      margin-top: 10px;
+      color: #ff4b4b;
       display: none;
-      width: 100%;
-      height: 5px;
-      background: #555;
-      margin: 10px 0;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    #loader::after {
-      content: "";
-      display: block;
-      height: 100%;
-      width: 0%;
-      background: #ff4b4b;
-      animation: load 2s linear infinite;
-    }
-    @keyframes load {
-      0% { width: 0%; }
-      50% { width: 80%; }
-      100% { width: 0%; }
+      font-weight: bold;
+      text-align: center;
     }
   </style>
 </head>
 <body>
+
+  <!-- Logo: You may replace src with your hosted logo image -->
   <img class="logo" src="https://i.postimg.cc/dtzWHLsW-/Screenshot-2025-05-22-at-3-02-07-PM.png" alt="InsuranceDekho Logo" />
   <h1>Smart Hire Assist</h1>
 
@@ -131,8 +118,8 @@
   </div>
 
   <div class="section">
-    <h2>Section 2: Mention Critical Skills needed</h2>
-    <label for="prioritySkills">Mention Critical Skill(s) (separated by commas) :</label>
+    <h2>Section 2: Upload Your Critical Skills</h2>
+    <label for="prioritySkills">Enter Critical Skill(s):</label>
     <input type="text" id="prioritySkills" placeholder="e.g. negotiation, python, salesforce" />
   </div>
   <div class="section">
@@ -145,13 +132,13 @@
     <div id="cvPreview"></div>
 
     <button onclick="submitForm()">Evaluate Fit</button>
-    <div id="loader"></div>
+    <div id="loader">Evaluating CVs... Please wait.</div>
   </div>
 
   <div class="section results" id="results">
     <h2>Results</h2>
-    <button onclick="downloadCSV()">Download CSV</button>
     <div id="resultsOutput"></div>
+    <button onclick="downloadCSV()">Download CSV</button>
   </div>
 
   <script>
@@ -203,7 +190,6 @@
               <td>${r.score}%</td>
               <td>${r.label}</td>
               <td>${r.priority || "—"}</td>
-              <td>${r.top_keywords?.join(", ") || "—"}</td>
             </tr>
           `).join("");
 
@@ -217,11 +203,12 @@
                 <th>Overall Score</th>
                 <th>Shortlist Recommendation</th>
                 <th>Matched Priority Skill(s)</th>
-                <th>Top Matched Keywords</th>
               </tr>
               ${rows}
             </table>
           `;
+
+          window.resultsData = data.results;
         })
         .catch(err => {
           document.getElementById("loader").style.display = "none";
@@ -231,22 +218,34 @@
     }
 
     function downloadCSV() {
-      const table = document.getElementById("resultsTable");
-      if (!table) return;
+      const data = window.resultsData;
+      if (!data || data.length === 0) return;
 
-      let csv = [];
-      for (let row of table.rows) {
-        let cols = Array.from(row.cells).map(cell => `"${cell.innerText}"`);
-        csv.push(cols.join(","));
+      const headers = [
+        "CV Name", "Section 1 Score", "Section 2 Score", "Section 3 Score",
+        "Overall Score", "Shortlist Recommendation", "Matched Priority Skill(s)", "Top Matched Keywords"
+      ];
+
+      const csv = [headers.join(",")];
+      for (const row of data) {
+        const line = [
+          `"${row.cv}"`,
+          `${row.section1_score}`,
+          `${row.section2_score}`,
+          `${row.section3_score}`,
+          `${row.score}`,
+          `"${row.label}"`,
+          `"${row.priority || ""}"`,
+          `"${(row.top_keywords || []).join(", ")}"`
+        ];
+        csv.push(line.join(","));
       }
 
       const blob = new Blob([csv.join("\n")], { type: "text/csv" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "SmartHireResults.csv";
-      document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
     }
   </script>
 </body>
