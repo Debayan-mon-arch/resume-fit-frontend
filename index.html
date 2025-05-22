@@ -7,17 +7,15 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-image: url('https://i.ibb.co/BHZWhn7K/Untitled-design-6.png');
-      background-size: cover;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
       padding: 20px;
-      max-width: 1000px;
+      max-width: 1100px;
       margin: auto;
+      background: #14122c;
+      color: #fff;
     }
     h1, h2 {
       text-align: center;
-      color: #B41C18;
+      color: #ff5c5c;
     }
     .logo {
       display: block;
@@ -25,32 +23,31 @@
       height: 60px;
     }
     .section {
-      background: rgba(255,255,255,0.95);
+      background: #222040;
       padding: 15px;
       margin-bottom: 20px;
       border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      box-shadow: 0 0 5px rgba(255,255,255,0.1);
     }
     label {
       font-weight: bold;
       display: block;
       margin-top: 10px;
+      color: #ffdddd;
     }
     select, input[type="file"], input[type="text"] {
       width: 100%;
-      padding: 5px;
+      padding: 8px;
+      margin-top: 4px;
     }
     button {
-      background: #B41C18;
+      background: #ff5c5c;
       color: white;
       padding: 10px 20px;
       border: none;
       cursor: pointer;
       font-size: 16px;
       margin-top: 10px;
-    }
-    .results {
-      margin-top: 20px;
     }
     table {
       width: 100%;
@@ -60,10 +57,10 @@
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
-      text-align: left;
+      color: #fff;
     }
     th {
-      background: #f2f2f2;
+      background: #333;
     }
   </style>
 </head>
@@ -72,40 +69,68 @@
   <h1>Resume Fit Evaluator</h1>
 
   <div class="section">
-    <h2>Section 1: Select Profile</h2>
-    <label>Department:</label>
-    <select id="jdDept">
+    <h2>Section 1: Department & Level</h2>
+    <label for="dept">Select Department:</label>
+    <select id="dept">
       <option value="">-- Select Department --</option>
-      <option value="tech">Tech</option>
-      <option value="marketing">Marketing</option>
-      <option value="hr">HR</option>
-      <option value="b2b">B2B</option>
-      <option value="b2c">B2C</option>
-      <option value="operations">Operations</option>
+      <option>Admin</option>
+      <option>B2B</option>
+      <option>B2C</option>
+      <option>Claims, Inbound & Onboarding</option>
+      <option>Compliance</option>
+      <option>Corporate Business</option>
+      <option>Cross Sell</option>
+      <option>Customer Excellence</option>
+      <option>Finance</option>
+      <option>Founder's Office</option>
+      <option>Human Resources</option>
+      <option>Insurer Relation</option>
+      <option>IT</option>
+      <option>Learning & Development</option>
+      <option>Legal</option>
+      <option>Marketing</option>
+      <option>OEM & Dealership</option>
+      <option>Operations</option>
+      <option>Partnership</option>
+      <option>Procurement</option>
+      <option>Product</option>
+      <option>Reinsurance</option>
+      <option>Renewal</option>
+      <option>Revenue</option>
+      <option>Strategy & Analytics</option>
+      <option>Supply</option>
+      <option>Technology</option>
     </select>
 
-    <label>Level:</label>
-    <select id="jdLevel">
+    <label for="level">Select Level:</label>
+    <select id="level">
       <option value="">-- Select Level --</option>
-      <option value="L1">L1</option>
-      <option value="L2">L2</option>
-      <option value="L3">L3</option>
-      <option value="L4">L4</option>
-      <option value="L5">L5</option>
-      <option value="L6">L6</option>
+      <option>Executive</option>
+      <option>Senior Executive</option>
+      <option>AM</option>
+      <option>DM</option>
+      <option>Manager</option>
+      <option>SM</option>
+      <option>AD</option>
+      <option>Senior AD</option>
+      <option>Director</option>
+      <option>AVP</option>
+      <option>VP</option>
+      <option>SVP</option>
     </select>
   </div>
 
   <div class="section">
-    <h2>Section 2: Add Critical Skill(s)</h2>
-    <input type="text" id="prioritySkill" placeholder="e.g. stakeholder management, tableau" />
+    <h2>Section 2: Upload Critical Skills</h2>
+    <label for="priority">Enter up to 3 Priority Skills (comma separated):</label>
+    <input type="text" id="prioritySkills" placeholder="e.g., python, leadership, sql" />
   </div>
-
   <div class="section">
-    <h2>Section 3: Upload JD & CVs</h2>
-    <label>Upload JD File:</label>
+    <h2>Section 3: Upload up to 5 CVs</h2>
+    <label for="jdFile">Upload JD:</label>
     <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
-    <label>Upload up to 5 CVs:</label>
+
+    <label for="cvFiles">Upload CVs:</label>
     <input type="file" id="cvFiles" multiple accept=".pdf,.doc,.docx" />
   </div>
 
@@ -122,59 +147,57 @@
     function submitForm() {
       const jdFile = document.getElementById("jdFile").files[0];
       const cvFiles = document.getElementById("cvFiles").files;
-      if (!jdFile || cvFiles.length === 0) return alert("Please upload a JD and at least one CV.");
+      const dept = document.getElementById("dept").value;
+      const level = document.getElementById("level").value;
+      const prioritySkills = document.getElementById("prioritySkills").value;
+
+      if (!jdFile || cvFiles.length === 0 || !dept || !level) {
+        alert("Please upload JD, at least one CV, and select department and level.");
+        return;
+      }
 
       const formData = new FormData();
       formData.append("jd", jdFile);
+      formData.append("department", dept);
+      formData.append("level", level);
+      formData.append("prioritySkills", prioritySkills);
+
       for (let i = 0; i < Math.min(5, cvFiles.length); i++) {
         formData.append("cvs", cvFiles[i]);
-      }
-
-      const extras = {
-        dept: document.getElementById("jdDept").value,
-        level: document.getElementById("jdLevel").value,
-        prioritySkill: document.getElementById("prioritySkill").value
-      };
-
-      for (const key in extras) {
-        if (extras[key]) formData.append(key, extras[key]);
       }
 
       fetch(backendURL, {
         method: "POST",
         body: formData
       })
-      .then(res => res.json())
-      .then(data => {
-        const out = data.results.map(r =>
-          `<tr>
-            <td>${r.cv}</td>
-            <td>${r.score}%</td>
-            <td>${r.label}</td>
-            <td>${r.matched_priority || "—"}</td>
-            <td>${r.section_scores?.section1 || 0}%</td>
-            <td>${r.section_scores?.section2 || 0}%</td>
-            <td>${r.section_scores?.section3 || 0}%</td>
-          </tr>`).join("");
+        .then(res => res.json())
+        .then(data => {
+          if (!data.results) {
+            alert("Error: Unexpected response from server.");
+            return;
+          }
 
-        document.getElementById("resultsOutput").innerHTML = `
-          <table>
-            <tr>
-              <th>CV</th>
-              <th>Total Score</th>
-              <th>Fit</th>
-              <th>Matched Priority</th>
-              <th>Section 1<br/>(Dept+Level)</th>
-              <th>Section 2<br/>(Critical Skills)</th>
-              <th>Section 3<br/>(JD→CV)</th>
-            </tr>
-            ${out}
-          </table>`;
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Something went wrong.");
-      });
+          const out = data.results.map(r =>
+            `<tr>
+              <td>${r.cv}</td>
+              <td>${r.score}%</td>
+              <td>${r.label}</td>
+              <td>${r.section_scores.join(" / ")}</td>
+              <td>${r.priority_matched || "—"}</td>
+            </tr>`
+          ).join("");
+
+          document.getElementById("resultsOutput").innerHTML = `
+            <table>
+              <tr><th>CV</th><th>Score</th><th>Fit</th><th>Section Scores</th><th>Matched Priority Skill(s)</th></tr>
+              ${out}
+            </table>
+          `;
+        })
+        .catch(err => {
+          console.error(err);
+          alert("Something went wrong. Please try again.");
+        });
     }
   </script>
 </body>
