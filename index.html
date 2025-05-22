@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-image: url('assets/pink-bg.png');
+      background-image: url('https://i.ibb.co/BHZWhn7K/Untitled-design-6.png');
       background-size: cover;
       background-attachment: fixed;
       background-repeat: no-repeat;
@@ -68,11 +68,11 @@
   </style>
 </head>
 <body>
-  <img src="assets/logo.png" alt="InsuranceDekho Logo" class="logo" />
+  <img src="https://i.ibb.co/m5fc0M2K/Whats-App-Image-2025-05-21-at-18-59-58.jpg" alt="InsuranceDekho Logo" class="logo" />
   <h1>Resume Fit Evaluator</h1>
 
   <div class="section">
-    <h2>Upload JD</h2>
+    <h2>Section 1: Select Profile</h2>
     <label>Department:</label>
     <select id="jdDept">
       <option value="">-- Select Department --</option>
@@ -94,48 +94,18 @@
       <option value="L5">L5</option>
       <option value="L6">L6</option>
     </select>
-
-    <label>Critical Skill(s) (Optional):</label>
-    <input type="text" id="prioritySkill" placeholder="e.g. stakeholder management, tableau" />
-
-    <label>JD File:</label>
-    <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
-    <label>Experience (years):</label>
-    <select id="jdExperience"><option value="">-- Optional --</option></select>
-
-    <label>Joining Availability:</label>
-    <select id="jdJoining">
-      <option value="">-- Optional --</option>
-      <option value="immediate">Immediate</option>
-      <option value="10 days">10 Days</option>
-      <option value="30 days">30 Days</option>
-      <option value="1 month">1 Month</option>
-      <option value="2 month">2 Months</option>
-      <option value="3 month">3 Months</option>
-    </select>
-
-    <label>Age:</label>
-    <select id="jdAge"><option value="">-- Optional --</option></select>
-
-    <label>Gender:</label>
-    <select id="jdGender">
-      <option value="">-- Optional --</option>
-      <option value="male">Male</option>
-      <option value="female">Female</option>
-    </select>
-
-    <label>Graduate Level:</label>
-    <select id="jdGraduate">
-      <option value="">-- Optional --</option>
-      <option value="10th">10th</option>
-      <option value="12th">12th</option>
-      <option value="ug">UG</option>
-      <option value="pg">PG</option>
-    </select>
   </div>
 
   <div class="section">
-    <h2>Upload up to 5 CVs</h2>
+    <h2>Section 2: Add Critical Skill(s)</h2>
+    <input type="text" id="prioritySkill" placeholder="e.g. stakeholder management, tableau" />
+  </div>
+
+  <div class="section">
+    <h2>Section 3: Upload JD & CVs</h2>
+    <label>Upload JD File:</label>
+    <input type="file" id="jdFile" accept=".pdf,.doc,.docx" />
+    <label>Upload up to 5 CVs:</label>
     <input type="file" id="cvFiles" multiple accept=".pdf,.doc,.docx" />
   </div>
 
@@ -148,13 +118,6 @@
 
   <script>
     const backendURL = "https://resume-fit-backend.onrender.com/parse";
-
-    window.onload = () => {
-      const exp = document.getElementById("jdExperience");
-      const age = document.getElementById("jdAge");
-      for (let i = 0; i <= 20; i++) exp.innerHTML += `<option value="${i}">${i}</option>`;
-      for (let i = 20; i <= 45; i++) age.innerHTML += `<option value="${i}">${i}</option>`;
-    };
 
     function submitForm() {
       const jdFile = document.getElementById("jdFile").files[0];
@@ -170,32 +133,48 @@
       const extras = {
         dept: document.getElementById("jdDept").value,
         level: document.getElementById("jdLevel").value,
-        experience: document.getElementById("jdExperience").value,
-        joining: document.getElementById("jdJoining").value,
-        age: document.getElementById("jdAge").value,
-        gender: document.getElementById("jdGender").value,
-        graduate: document.getElementById("jdGraduate").value,
         prioritySkill: document.getElementById("prioritySkill").value
       };
+
       for (const key in extras) {
         if (extras[key]) formData.append(key, extras[key]);
       }
 
-      fetch(backendURL, { method: "POST", body: formData })
-        .then(res => res.json())
-        .then(data => {
-          const out = data.results.map(r => `<tr><td>${r.cv}</td><td>${r.score}%</td><td>${r.label}</td><td>${r.matched_priority || "—"}</td></tr>`).join("");
-          document.getElementById("resultsOutput").innerHTML = `
-            <table>
-              <tr><th>CV</th><th>Score</th><th>Fit</th><th>Matched Priority</th></tr>
-              ${out}
-            </table>
-          `;
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Something went wrong.");
-        });
+      fetch(backendURL, {
+        method: "POST",
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        const out = data.results.map(r =>
+          `<tr>
+            <td>${r.cv}</td>
+            <td>${r.score}%</td>
+            <td>${r.label}</td>
+            <td>${r.matched_priority || "—"}</td>
+            <td>${r.section_scores?.section1 || 0}%</td>
+            <td>${r.section_scores?.section2 || 0}%</td>
+            <td>${r.section_scores?.section3 || 0}%</td>
+          </tr>`).join("");
+
+        document.getElementById("resultsOutput").innerHTML = `
+          <table>
+            <tr>
+              <th>CV</th>
+              <th>Total Score</th>
+              <th>Fit</th>
+              <th>Matched Priority</th>
+              <th>Section 1<br/>(Dept+Level)</th>
+              <th>Section 2<br/>(Critical Skills)</th>
+              <th>Section 3<br/>(JD→CV)</th>
+            </tr>
+            ${out}
+          </table>`;
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Something went wrong.");
+      });
     }
   </script>
 </body>
